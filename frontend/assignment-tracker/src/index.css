@@ -1,10 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: all;
-}
 
 /* ######################################################## */
-/* 
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -200,7 +197,49 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-background;
     letter-spacing: var(--tracking-normal);
   }
-} */
+}
+
+@layer components {
+  .card {
+    @apply flex flex-col gap-3 rounded-md bg-card text-card-foreground p-4 shadow-sm;
+  }
+
+  .card-header {
+    @apply flex items-center justify-between gap-2;
+  }
+
+  .card-title {
+    @apply text-lg font-semibold;
+  }
+
+  .card-body {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium tracking-wide;
+  }
+
+  .badge-high {
+    @apply badge border-red-200 bg-red-100 text-red-700;
+  }
+
+  .badge-medium {
+    @apply badge border-yellow-200 bg-yellow-100 text-yellow-700;
+  }
+
+  .badge-low {
+    @apply badge border-green-200 bg-green-100 text-green-700;
+  }
+
+  .text-secondary {
+    @apply text-secondary;
+  }
+}
+
+@plugin "daisyui" {
+  themes: all;
+}

@@ -25,6 +25,7 @@ function Navbar() {
                   console.error(err);
                 }
               }}
+              className="cursor-pointer"
             >
               Logout
             </button>

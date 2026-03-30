@@ -40,7 +40,7 @@ function useTasks() {
     }
   }, []);
 
-  const editTasks = useCallback(async (input: UpdateTaskType, id: string) => {
+  const editTasks = useCallback(async (id: string, input: UpdateTaskType) => {
     try {
       setError(null);
       const data = await updateTask(id, input);
@@ -66,7 +66,7 @@ function useTasks() {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   return {
     tasks,

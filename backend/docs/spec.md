@@ -233,21 +233,21 @@ get high-priority tasks for the current user
 ┌────────────────────────────────────────────────────┐
 │ Study Planner                         [Logout]     │
 ├────────────────────────────────────────────────────┤
-│ [All] [Todo] [In Progress] [Done]   [Sort by Date]│
+│ [All] [Todo] [In Progress] [Done]   [Sort by Date] │
 ├────────────────────────────────────────────────────┤
-│ [ + Add Task ]                                       │
+│ [ + Add Task ]                                     │
 ├────────────────────────────────────────────────────┤
 │ ┌───────────────────────────────────────────────┐  │
 │ │ Finish math homework                          │  │
-│ │ Due: 2026-03-18   Priority: High             │  │
-│ │ Status: Todo                                 │  │
-│ │ [Edit] [Delete]                              │  │
+│ │ Due: 2026-03-18   Priority: High              │  │
+│ │ Status: Todo                                  │  │
+│ │ [Edit] [Delete]                               │  │
 │ └───────────────────────────────────────────────┘  │
 │ ┌───────────────────────────────────────────────┐  │
 │ │ Study biology chapter 4                       │  │
-│ │ Due: 2026-03-20   Priority: Medium           │  │
+│ │ Due: 2026-03-20   Priority: Medium            │  │
 │ │ Status: In Progress                           │  │
-│ │ [Edit] [Delete]                              │  │
+│ │ [Edit] [Delete]                               │  │
 │ └───────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────┘
 ```

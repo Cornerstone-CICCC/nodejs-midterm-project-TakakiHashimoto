@@ -3,6 +3,7 @@ type StatusType = "todo" | "in-progress" | "done";
 
 type TaskType = {
   id: string;
+  user_id: string;
   title: string;
   description: string | null;
   due_date: string | null;

@@ -263,7 +263,7 @@ async function updateTask(req: AuthedRequest, res: Response) {
     };
 
     const updatedData = await db.query(
-      "UPDATE tasks SET title=($1), description=($2), due_date = ($3), priority = ($4), status = ($5), subject = ($6), updated_at = now() WHERE user_id = ($7) AND id = ($8) RETURNING user_id, title, description, due_date, priority, status, subject ",
+      "UPDATE tasks SET title=($1), description=($2), due_date = ($3), priority = ($4), status = ($5), subject = ($6), updated_at = now() WHERE user_id = ($7) AND id = ($8) RETURNING id, user_id, title, description, due_date, priority, status, subject ",
       [
         newData.title,
         newData.description,
