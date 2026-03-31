@@ -1,5 +1,5 @@
 export const ALLOWED_PRIORITIES = ["low", "medium", "high"] as const;
-export const ALLOWED_STATUSES = ["todo", "in_progress", "done"] as const;
+export const ALLOWED_STATUSES = ["todo", "in-progress", "done"] as const;
 
 export function isPriority(
   value: string,

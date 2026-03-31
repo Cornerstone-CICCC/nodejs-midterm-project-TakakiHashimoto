@@ -34,6 +34,7 @@ function useTasks() {
       setError(null);
       const data = await createTask(input); // { message: "Successfully created new task", task: data.rows[0] }
       setTasks((prev) => [data.task, ...prev]);
+      console.log("Successfully added");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to add task");
       throw e;
@@ -47,6 +48,7 @@ function useTasks() {
       setTasks((prev) =>
         prev.map((task) => (task.id === id ? data.task : task)),
       );
+      console.log("Successfully updated");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to update task");
       throw e;
@@ -58,6 +60,7 @@ function useTasks() {
       setError(null);
       await deleteTask(id);
       setTasks((prev) => prev.filter((task) => task.id !== id));
+      console.log("Successfully de;eted");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to delete");
       throw e;

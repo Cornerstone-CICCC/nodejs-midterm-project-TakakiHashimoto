@@ -32,8 +32,12 @@ async function createTask(data: CreateTaskType) {
     headers: { "Content-Type": "application/json" },
   });
 
-  if (!res.ok) throw new Error("Failed to fetch tasks");
+  if (!res.ok) {
+    console.log("Failed to updating");
+    throw new Error("Failed to fetch tasks");
+  }
 
+  console.log("Succeded in updating");
   return await res.json();
 }
 

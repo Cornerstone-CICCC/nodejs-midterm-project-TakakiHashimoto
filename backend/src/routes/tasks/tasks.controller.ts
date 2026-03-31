@@ -63,16 +63,19 @@ async function createNewTask(req: AuthedRequest, res: Response) {
   const userId = req.userId;
   const { title, description, due_date, priority, status, subject } = req.body;
   if (typeof title !== "string" || !title.trim()) {
+    console.log("Title is required");
     return res.status(400).json({ error: "Title is required" });
   }
 
   // validating inputs
   if (due_date !== undefined) {
     if (due_date !== null && typeof due_date !== "string") {
+      console.log("Due date must  be null or string");
       return res.status(400).json({ error: "due_date must be null or string" });
     }
     const isValideDate = validateDate(due_date);
     if (typeof due_date === "string" && !isValideDate) {
+      console.log("Invalid due date format");
       return res
         .status(400)
         .json({ error: "Due Date needs to be YYYY-MM-DD format" });
@@ -87,17 +90,21 @@ async function createNewTask(req: AuthedRequest, res: Response) {
     typeof subject === "string" && subject.trim() ? subject.trim() : null;
 
   if (priority !== undefined) {
-    if (typeof priority !== "string")
+    if (typeof priority !== "string") {
+      console.log("Needs to be string or null");
       return res.status(400).json({ error: "invlaid request" });
+    }
 
     const normalizedPriority = priority.trim().toLocaleLowerCase();
     if (!isPriority(normalizedPriority)) {
+      console.log("No empty is allowed");
       return res.status(400).json({ error: "Invalid Request" });
     }
   }
 
   if (status !== undefined) {
     if (typeof status !== "string") {
+      console.log("Invalid status format, needs to be string");
       return res.status(400).json({ error: "Invalid Request" });
     }
 
@@ -114,6 +121,7 @@ async function createNewTask(req: AuthedRequest, res: Response) {
   const normalizedStatus =
     status !== undefined ? status.trim().toLocaleLowerCase() : "todo";
   try {
+    console.log("Processing Creating table");
     const data = await db.query(
       "INSERT INTO tasks (user_id, title, description, due_date, priority, status, subject) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING user_id, title, description, due_date, priority, status, subject",
       [
@@ -149,10 +157,12 @@ async function updateTask(req: AuthedRequest, res: Response) {
   // title validation
   if (title !== undefined) {
     if (typeof title !== "string") {
+      console.log("Invalid title");
       return res.status(400).json({ error: "Invalid request" });
     }
 
     if (!title.trim()) {
+      console.log("Title not included");
       return res
         .status(400)
         .json({ error: "title needs not include empty spaces" });
@@ -162,10 +172,12 @@ async function updateTask(req: AuthedRequest, res: Response) {
   // due_date validation
   if (due_date !== undefined) {
     if (due_date !== null && typeof due_date !== "string") {
+      console.log("Invalid date format");
       return res.status(400).json({ error: "due_date must be string or null" });
     }
     const isValideDate = validateDate(due_date);
     if (typeof due_date === "string" && !isValideDate) {
+      console.log("Invalid date format");
       return res
         .status(400)
         .json({ error: "Due Date needs to be YYYY-MM-DD format" });
@@ -175,12 +187,14 @@ async function updateTask(req: AuthedRequest, res: Response) {
   // priority validation
   if (priority !== undefined) {
     if (typeof priority !== "string") {
+      console.log("Invalid priority format");
       return res.status(400).json({ error: "Invalid Request" });
     }
 
     const normalizedPriority = priority.trim().toLowerCase();
 
     if (!isPriority(normalizedPriority)) {
+      console.log("Invalid priority format");
       return res
         .status(400)
         .json({ error: "Priority must be low, medium or high" });
@@ -190,12 +204,14 @@ async function updateTask(req: AuthedRequest, res: Response) {
   // status validation
   if (status !== undefined) {
     if (typeof status !== "string") {
+      console.log("Status must be string");
       return res.status(400).json({ error: "Invalid Request" });
     }
 
     const normalizedStatus = status.trim().toLowerCase();
 
     if (!isStatus(normalizedStatus)) {
+      console.log("Invalid status format");
       return res
         .status(400)
         .json({ error: "Status must be todo, in-progress or done" });
@@ -205,6 +221,7 @@ async function updateTask(req: AuthedRequest, res: Response) {
   // description validation
   if (description !== undefined) {
     if (description !== null && typeof description !== "string") {
+      console.log("Description needs to be string or null");
       return res
         .status(400)
         .json({ error: "description must be string or null" });
@@ -213,6 +230,7 @@ async function updateTask(req: AuthedRequest, res: Response) {
 
   if (subject !== undefined) {
     if (subject !== null && typeof subject !== "string") {
+      console.log("Description needs to be string or null");
       return res
         .status(400)
         .json({ error: "description must be string or null" });
@@ -221,11 +239,13 @@ async function updateTask(req: AuthedRequest, res: Response) {
 
   // Getting a task
   try {
+    console.log("Initiating updating task");
     const data = await db.query(
       "SELECT * FROM tasks WHERE user_id = ($1) AND id = ($2)",
       [userId, taskId],
     );
     if (data.rows.length === 0) {
+      console.log("Task not found during the process of updating task");
       return res.status(404).json({ error: "Task not found" });
     }
 
@@ -284,6 +304,7 @@ async function updateTask(req: AuthedRequest, res: Response) {
       });
   } catch (e) {
     console.error(e);
+    console.log("Failed to update task at backend side");
     return res.status(500).json({ error: "Failed to update new task" });
   }
 }

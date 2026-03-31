@@ -14,6 +14,6 @@ export function validateDate(date: unknown) {
   return (
     utcDate.getUTCFullYear() === year &&
     utcDate.getUTCMonth() === month - 1 &&
-    utcDate.getUTCDay() === day
+    utcDate.getUTCDate() === day
   );
 }
