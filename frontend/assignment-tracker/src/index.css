@@ -204,7 +204,15 @@
 
 @layer components {
   .card {
-    @apply flex flex-col gap-3 rounded-md bg-card text-card-foreground p-4 shadow-sm;
+    @apply flex flex-col gap-3 rounded-2xl p-4;
+    @apply bg-gradient-to-br from-[#0b120d] via-[#0c110d] to-[#0d140f];
+    @apply text-[#d8e7d3];
+    @apply border border-[#2c4a34];
+    @apply shadow-[0_8px_30px_rgba(0,0,0,0.45)];
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(120, 180, 120, 0.08),
+      inset 0 0 0 1px rgba(70, 110, 70, 0.18);
   }
 
   .card-header {
@@ -219,24 +227,33 @@
     @apply text-sm text-muted-foreground;
   }
 
-  .badge {
-    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium tracking-wide;
+  .task-badge {
+    @apply inline-flex items-center justify-center rounded-full border whitespace-nowrap;
+    @apply px-3.5 py-1.5 text-sm font-medium leading-none;
   }
 
   .badge-high {
-    @apply badge border-red-200 bg-red-100 text-red-700;
+    @apply border-red-200 bg-red-100 text-red-700;
   }
 
   .badge-medium {
-    @apply badge border-yellow-200 bg-yellow-100 text-yellow-700;
+    @apply border-yellow-200 bg-yellow-100 text-yellow-700;
   }
 
   .badge-low {
-    @apply badge border-green-200 bg-green-100 text-green-700;
+    @apply border-green-200 bg-green-100 text-green-700;
   }
 
   .text-secondary {
     @apply text-secondary;
+  }
+
+  .modal-backdrop {
+    @apply fixed z-10 flex justify-center items-center w-full h-screen;
+    background:
+      radial-gradient(circle at top, rgba(34, 70, 45, 0.18), transparent 35%),
+      rgba(2, 8, 4, 0.72);
+    backdrop-filter: blur(6px);
   }
 }
 

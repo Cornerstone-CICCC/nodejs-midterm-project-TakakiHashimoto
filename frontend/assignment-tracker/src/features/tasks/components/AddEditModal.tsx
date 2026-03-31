@@ -6,6 +6,7 @@ import type {
   TaskType,
   UpdateTaskType,
 } from "../types";
+import { ChevronDown } from "lucide-react";
 
 function AddEditModal({
   editingTask,
@@ -70,12 +71,19 @@ function AddEditModal({
     setSubject(editingTask.subject ?? "");
     setDueDate(formatDueDate ?? "");
     setPriority(editingTask.priority);
+    setPriorityDisplayName(editingTask.priority);
     setStatus(editingTask.status);
+    setStatusDisplayName(editingTask.status);
   }, [editingTask]);
 
   return (
-    <div className="fixed bg-black/70 z-10 flex justify-center items-center w-full h-screen">
-      <div className="bg-white card">
+    <div
+      className="fixed z-10 flex justify-center items-center w-full h-screen bg-black/70"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) closeModal();
+      }}
+    >
+      <div className="bg-white card" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between">
           <h2 className="text-blue-800 text-2xl">Add assignments</h2>
           <button
@@ -131,15 +139,15 @@ function AddEditModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="bg-black text-secondary rounded-sm p-2"
+            className=" text-secondary rounded-sm p-2 base-200 bg-gray-950"
           />
           <div className="flex gap-3">
             <div className="dropdown">
-              <div tabIndex={0} role="button" className="btn m-1">
-                {priorityDisplayName}
+              <div tabIndex={0} role="button" className="btn m-1 flex gap-1">
+                <span>{priorityDisplayName}</span> <ChevronDown />
               </div>
               <ul
-                tabIndex="-1"
+                tabIndex={-1}
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
                 <li
@@ -147,7 +155,7 @@ function AddEditModal({
                     setPriority("low");
                     setPriorityDisplayName("low");
                   }}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
                   low
                 </li>
@@ -156,7 +164,7 @@ function AddEditModal({
                     setPriority("medium");
                     setPriorityDisplayName("medium");
                   }}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
                   medium
                 </li>
@@ -165,18 +173,19 @@ function AddEditModal({
                     setPriority("high");
                     setPriorityDisplayName("high");
                   }}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
                   high
                 </li>
               </ul>
             </div>
             <div className="dropdown">
-              <div tabIndex={0} role="button" className="btn m-1">
-                {statusDisplayName}
+              <div tabIndex={0} role="button" className="btn m-1 flex gap-1">
+                <span>{statusDisplayName}</span>
+                <ChevronDown />
               </div>
               <ul
-                tabIndex="-1"
+                tabIndex={-1}
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
                 <li
@@ -184,7 +193,7 @@ function AddEditModal({
                     setStatus("todo");
                     setStatusDisplayName("todo");
                   }}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
                   todo
                 </li>
@@ -193,7 +202,7 @@ function AddEditModal({
                     setStatus("in-progress");
                     setStatusDisplayName("in-progress");
                   }}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
                   in-progress
                 </li>
@@ -202,14 +211,14 @@ function AddEditModal({
                     setStatus("done");
                     setStatusDisplayName("done");
                   }}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
                   done
                 </li>
               </ul>
             </div>
           </div>
-          <div>
+          <div className="flex justify-between px-3 mt-6">
             <button
               type="button"
               onClick={handleCancel}
@@ -217,7 +226,7 @@ function AddEditModal({
             >
               Cancel
             </button>
-            <button className="btn-primary cursor-pointer">
+            <button className="btn btn-info cursor-pointer">
               Add assignment
             </button>
           </div>

@@ -4,24 +4,33 @@ import { useMemo, useState } from "react";
 import { useTasks } from "../../tasks/hooks/useTasks";
 import TaskCard from "../../tasks/components/TaskCard";
 import AddEditModal from "../../tasks/components/AddEditModal";
+import DeleteConfirmModal from "../../tasks/components/DeleteConfirmModal";
 
 function DashboardPage() {
   const { user } = useAuth();
-  const { editTasks, addTasks, tasks } = useTasks();
+  const { editTasks, addTasks, deleteTasks, tasks } = useTasks();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   function closeModal() {
     setIsModalOpen(false);
+    setIsDeleteModalOpen(false);
     setMode("add");
+    setSelectedTaskId("");
   }
 
   function changeModeToEdit(id: string) {
     setIsModalOpen(true);
     setMode("edit");
     setSelectedTaskId(id);
+  }
+
+  function openDeleteModal(id: string) {
+    setSelectedTaskId(id);
+    setIsDeleteModalOpen(true);
   }
 
   const selectedTask = useMemo(() => {
@@ -39,6 +48,14 @@ function DashboardPage() {
           addTasks={addTasks}
         />
       )}
+      {/* will fix to type gurad when the task is undefined */}
+      {isDeleteModalOpen && (
+        <DeleteConfirmModal
+          task={selectedTask!}
+          closeModal={closeModal}
+          deleteTasks={deleteTasks}
+        />
+      )}
       <div className="flex flex-col gap-3">
         <h1>Welcome back, {user?.username}</h1>
         <div>
@@ -52,10 +69,15 @@ function DashboardPage() {
             Add task
           </button>
         </div>
-        <div>
+        <div className="flex flex-col gap-3">
           {tasks.length === 0 && <p>No assignments to display</p>}
           {tasks.map((t) => (
-            <TaskCard key={t.id} task={t} changeModeToEdit={changeModeToEdit} />
+            <TaskCard
+              key={t.id}
+              task={t}
+              changeModeToEdit={changeModeToEdit}
+              openDeleteModal={openDeleteModal}
+            />
           ))}
         </div>
       </div>

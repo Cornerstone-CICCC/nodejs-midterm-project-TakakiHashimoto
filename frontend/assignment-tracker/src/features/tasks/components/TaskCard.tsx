@@ -3,9 +3,11 @@ import type { TaskType } from "../types";
 function TaskCard({
   task,
   changeModeToEdit,
+  openDeleteModal,
 }: {
   task: TaskType;
   changeModeToEdit: (id: string) => void;
+  openDeleteModal: (id: string) => void;
 }) {
   const badgeStyle =
     task.priority === "high"
@@ -60,8 +62,8 @@ function TaskCard({
   return (
     <div className="card">
       <div className="flex gap-3">
-        <span className={statusBadgeStyle}>{task.status}</span>
-        <span className={badgeStyle}>{task.priority}</span>
+        <span className={`task-badge ${statusBadgeStyle}`}>{task.status}</span>
+        <span className={`task-badge ${badgeStyle}`}>{task.priority}</span>
       </div>
 
       <h2 className="card-title">{task.title}</h2>
@@ -77,7 +79,12 @@ function TaskCard({
         >
           edit
         </button>
-        <button className="btn btn-outline btn-error rounded-md">delete</button>
+        <button
+          className="btn btn-outline btn-error rounded-md"
+          onClick={() => openDeleteModal(task.id)}
+        >
+          delete
+        </button>
       </div>
     </div>
   );
