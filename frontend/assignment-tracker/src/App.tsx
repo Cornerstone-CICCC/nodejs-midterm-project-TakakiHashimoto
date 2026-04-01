@@ -6,6 +6,7 @@ import DashboardPage from "./features/dashboard/pages/DashboardPage";
 import ProtectedRoutes from "./components/layout/ProtectedRoutes";
 import PublicOnlyRoutes from "./components/layout/PublicOnlyRoutes";
 import { useAuth } from "./features/auth/hooks/useAuth";
+import TaskDetailPage from "./features/tasks/pages/TaskDetailPage";
 
 function App() {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ function App() {
           </Route>
           <Route element={<ProtectedRoutes />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
           </Route>
         </Routes>
       </main>

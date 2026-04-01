@@ -19,7 +19,7 @@ function AddEditModal({
   closeModal: () => void;
   mode: "add" | "edit";
   editTasks: (id: string, data: UpdateTaskType) => Promise<void>;
-  addTasks: (input: CreateTaskType) => Promise<void>;
+  addTasks?: (input: CreateTaskType) => Promise<void>;
 }) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -56,7 +56,9 @@ function AddEditModal({
       await editTasks(editingTask.id, data);
       console.log("Succeessfully updated");
     } else {
-      await addTasks(data);
+      if (addTasks) {
+        await addTasks(data);
+      }
     }
 
     console.log("Successfully executed");
@@ -139,7 +141,7 @@ function AddEditModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className=" text-secondary rounded-sm p-2 base-200 bg-gray-950"
+            className=" text-secondary rounded-sm p-2 base-200 bg-black/30"
           />
           <div className="flex gap-3">
             <div className="dropdown">

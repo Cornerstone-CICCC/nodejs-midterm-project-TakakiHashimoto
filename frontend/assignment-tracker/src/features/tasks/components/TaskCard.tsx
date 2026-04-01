@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import type { TaskType } from "../types";
 
 function TaskCard({
@@ -25,34 +26,38 @@ function TaskCard({
 
   if (!task.due_date) {
     return (
-      <div className="card">
-        <div>
-          <span>{task.status}</span>
-          <span>{task.priority}</span>
-        </div>
+      <Link to={`/tasks/${task.id}`}>
+        <div className="card">
+          <div>
+            <span>{task.status}</span>
+            <span>{task.priority}</span>
+          </div>
 
-        <h2 className="text-4xl">{task.title}</h2>
-        <div>
-          <p>No due_date provided</p>
+          <h2 className="text-4xl">{task.title}</h2>
+          <div>
+            <p>No due_date provided</p>
+          </div>
         </div>
-      </div>
+      </Link>
     );
   }
 
   const dueDate = new Date(task.due_date);
   if (Number.isNaN(dueDate.getTime())) {
     return (
-      <div className="card">
-        <div className="flex gap-6">
-          <span>{task.status}</span>
-          <span>{task.priority}</span>
-        </div>
+      <Link to={`/tasks/${task.id}`}>
+        <div className="card">
+          <div className="flex gap-6">
+            <span>{task.status}</span>
+            <span>{task.priority}</span>
+          </div>
 
-        <h2 className="text-4xl">{task.title}</h2>
-        <div>
-          <p>Due: Invalid due date</p>
+          <h2 className="text-4xl">{task.title}</h2>
+          <div>
+            <p>Due: Invalid due date</p>
+          </div>
         </div>
-      </div>
+      </Link>
     );
   }
   const year = dueDate.getFullYear();
@@ -61,21 +66,28 @@ function TaskCard({
   const day = dueDate.toLocaleDateString("en-US", { weekday: "long" });
   return (
     <div className="card">
-      <div className="flex gap-3">
-        <span className={`task-badge ${statusBadgeStyle}`}>{task.status}</span>
-        <span className={`task-badge ${badgeStyle}`}>{task.priority}</span>
-      </div>
+      <Link to={`/tasks/${task.id}`}>
+        <div className="flex gap-3">
+          <span className={`task-badge ${statusBadgeStyle}`}>
+            {task.status}
+          </span>
+          <span className={`task-badge ${badgeStyle}`}>{task.priority}</span>
+        </div>
 
-      <h2 className="card-task-title">{task.title}</h2>
-      <div>
-        <p>
-          Due: {day}, {month} {date}, {year}
-        </p>
-      </div>
+        <h2 className="card-task-title">{task.title}</h2>
+        <div>
+          <p>
+            Due: {day}, {month} {date}, {year}
+          </p>
+        </div>
+      </Link>
       <div className="flex gap-3">
         <button
           className="btn btn-outline btn-warning rounded-md"
-          onClick={() => changeModeToEdit(task.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            changeModeToEdit(task.id);
+          }}
         >
           edit
         </button>
