@@ -24,9 +24,9 @@ function LoginPage() {
 
   useEffect(() => setError(null), []);
   return (
-    <div className="flex flex-col gap-2 justify-center items-center">
+    <div className="flex flex-col gap-2 justify-center items-center h-screen">
       <div>
-        <h2>LOGIN</h2>
+        <h2 className="text-4xl">LOGIN</h2>
       </div>
       <div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-1 h-full">

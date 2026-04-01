@@ -219,8 +219,8 @@
     @apply flex items-center justify-between gap-2;
   }
 
-  .card-title {
-    @apply text-lg font-semibold;
+  .card-task-title {
+    @apply text-4xl font-semibold;
   }
 
   .card-body {

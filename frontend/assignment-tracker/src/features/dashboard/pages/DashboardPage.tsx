@@ -8,6 +8,7 @@ import DeleteConfirmModal from "../../tasks/components/DeleteConfirmModal";
 import type {
   FilterPriorityType,
   FilterStatusType,
+  SortType,
   TaskType,
 } from "../../tasks/types";
 
@@ -25,24 +26,68 @@ function DashboardPage() {
   const [selectedStatus, setSelectedStatus] = useState<FilterStatusType>("all");
   const [selectedPriority, setSelectedPriority] =
     useState<FilterPriorityType>("all");
+  const [selectedSortValue, setSelectedSortValue] = useState<SortType>("none");
 
-  let displayTasks: TaskType[] | [] = useMemo(() => {
+  const priorityMapping = { high: 3, medium: 2, low: 1 };
+
+  const displayTasks: TaskType[] | [] = useMemo(() => {
+    let computedTasks: TaskType[] | [] = [];
+    // Filter first
     if (selectedStatus === "all" && selectedPriority === "all")
-      return [...tasks];
-    if (selectedStatus === "all" && !(selectedPriority === "all"))
-      return tasks.filter((t) => t.priority === selectedPriority);
-    if (!(selectedStatus === "all") && selectedPriority === "all")
-      return tasks.filter((t) => t.status === selectedStatus);
+      computedTasks = [...tasks];
+    else if (selectedStatus === "all" && !(selectedPriority === "all"))
+      computedTasks = tasks.filter((t) => t.priority === selectedPriority);
+    else if (!(selectedStatus === "all") && selectedPriority === "all")
+      computedTasks = tasks.filter((t) => t.status === selectedStatus);
+    else
+      computedTasks = tasks.filter(
+        (t) => t.status === selectedStatus && t.priority === selectedPriority,
+      );
 
-    return tasks.filter(
-      (t) => t.status === selectedStatus && t.priority === selectedPriority,
-    );
-  }, [selectedPriority, selectedStatus, tasks]);
+    // sorting with filterd tasks
+    if (selectedSortValue === "none") return computedTasks;
+    if (selectedSortValue === "due-asc") {
+      const tempSortTasks = [...computedTasks];
+      return tempSortTasks.sort((a, b) => {
+        if (!a.description && !b.due_date) return 0;
+        if (!a.due_date) return 1;
+        if (!b.due_date) return -1;
+        return new Date(a.due_date).getTime() - new Date(b.due_date).getTime(); // getTime() returns milliseconds
+      });
+    }
+    if (selectedSortValue === "due-desc") {
+      const tempSortTasks = [...computedTasks];
+      return tempSortTasks.sort((a, b) => {
+        if (!a.description && !b.due_date) return 0;
+        if (!a.due_date) return 1;
+        if (!b.due_date) return -1;
+        return new Date(b.due_date).getTime() - new Date(a.due_date).getTime();
+      });
+    }
+    if (selectedSortValue === "priority-asc") {
+      const tempSortTasks = [...computedTasks];
+      return tempSortTasks.sort(
+        (a, b) => priorityMapping[a.priority] - priorityMapping[b.priority],
+      );
+    }
+    if (selectedSortValue === "priority-desc") {
+      const tempSortTasks = [...computedTasks];
+      return tempSortTasks.sort(
+        (a, b) => priorityMapping[b.priority] - priorityMapping[a.priority],
+      );
+    }
+    return computedTasks;
+  }, [selectedPriority, selectedStatus, tasks, selectedSortValue]);
 
   function resetFilter() {
     setSelectedPriority("all");
     setSelectedStatus("all");
   }
+
+  function resetSortValue() {
+    setSelectedSortValue("none");
+  }
+
   function closeModal() {
     setIsModalOpen(false);
     setIsDeleteModalOpen(false);
@@ -60,16 +105,6 @@ function DashboardPage() {
     setSelectedTaskId(id);
     setIsDeleteModalOpen(true);
   }
-
-  const priorityMapping = { high: 3, medium: 2, low: 1 };
-
-  function sortByPriorityAsc() {
-    const tempTasks = [...tasks];
-  }
-  function sortByPriorityDesc() {}
-
-  function sortByDueAsc() {}
-  function sortByDueDesc() {}
 
   const selectedTask = useMemo(() => {
     return tasks.find((t) => t.id === selectedTaskId);
@@ -94,7 +129,8 @@ function DashboardPage() {
           deleteTasks={deleteTasks}
         />
       )}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 ">
+        <h1 className="text-5xl mx-3">Welcome back, {user?.username}</h1>
         <div className="flex justify-start px-2.5">
           <div className="relative">
             <div className="flex gap-1 items-center mx-1.5 mt-0.5 relative  ">
@@ -212,10 +248,16 @@ function DashboardPage() {
                         Priority:
                       </h6>
                       <div className="w-full flex gap-2">
-                        <span className={`btn btn-soft btn-secondary`}>
+                        <span
+                          className={`btn ${selectedSortValue !== "priority-asc" && "btn-soft"} btn-secondary`}
+                          onClick={() => setSelectedSortValue("priority-asc")}
+                        >
                           Ascending
                         </span>
-                        <span className={`btn btn-soft btn-secondary`}>
+                        <span
+                          className={`btn ${selectedSortValue !== "priority-desc" && "btn-soft"} btn-secondary`}
+                          onClick={() => setSelectedSortValue("priority-desc")}
+                        >
                           Dscending
                         </span>
                       </div>
@@ -225,15 +267,24 @@ function DashboardPage() {
                         Due_Date:
                       </h6>
                       <div className="w-full flex gap-2">
-                        <span className={`btn btn-soft btn-secondary`}>
+                        <span
+                          className={`btn ${selectedSortValue !== "due-asc" && "btn-soft"} btn-secondary`}
+                          onClick={() => setSelectedSortValue("due-asc")}
+                        >
                           Ascending
                         </span>
-                        <span className={`btn btn-soft btn-secondary`}>
+                        <span
+                          className={`btn ${selectedSortValue !== "due-desc" && "btn-soft"} btn-secondary`}
+                          onClick={() => setSelectedSortValue("due-desc")}
+                        >
                           Dscending
                         </span>
                       </div>
                     </div>
-                    <button className="btn btn-outline btn-error w-full">
+                    <button
+                      className="btn btn-outline btn-error w-full"
+                      onClick={resetSortValue}
+                    >
                       Reset Filter
                     </button>
                   </div>
@@ -243,7 +294,6 @@ function DashboardPage() {
           </div>
         </div>
 
-        <h1 className="text-5xl">Welcome back, {user?.username}</h1>
         <div>
           <button
             className="flex gap-1 items-center btn btn-primary rounded-sm"

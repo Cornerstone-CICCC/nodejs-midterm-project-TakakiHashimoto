@@ -5,12 +5,15 @@ import SignupPage from "./features/auth/pages/SignupPage";
 import DashboardPage from "./features/dashboard/pages/DashboardPage";
 import ProtectedRoutes from "./components/layout/ProtectedRoutes";
 import PublicOnlyRoutes from "./components/layout/PublicOnlyRoutes";
+import { useAuth } from "./features/auth/hooks/useAuth";
 
 function App() {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-base-100">
       <main>
-        <Navbar />
+        {user && <Navbar />}
+
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route element={<PublicOnlyRoutes />}>

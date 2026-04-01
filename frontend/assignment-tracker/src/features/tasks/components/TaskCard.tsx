@@ -31,7 +31,7 @@ function TaskCard({
           <span>{task.priority}</span>
         </div>
 
-        <h2>{task.title}</h2>
+        <h2 className="text-4xl">{task.title}</h2>
         <div>
           <p>No due_date provided</p>
         </div>
@@ -48,7 +48,7 @@ function TaskCard({
           <span>{task.priority}</span>
         </div>
 
-        <h2>{task.title}</h2>
+        <h2 className="text-4xl">{task.title}</h2>
         <div>
           <p>Due: Invalid due date</p>
         </div>
@@ -66,7 +66,7 @@ function TaskCard({
         <span className={`task-badge ${badgeStyle}`}>{task.priority}</span>
       </div>
 
-      <h2 className="card-title">{task.title}</h2>
+      <h2 className="card-task-title">{task.title}</h2>
       <div>
         <p>
           Due: {day}, {month} {date}, {year}
