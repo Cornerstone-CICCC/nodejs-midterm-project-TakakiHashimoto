@@ -1,6 +1,8 @@
 type PriorityType = "low" | "medium" | "high";
 type StatusType = "todo" | "in-progress" | "done";
 
+type FilterStatusType = "all" | "todo" | "in-progress" | "done";
+type FilterPriorityType = "all" | "low" | "medium" | "high";
 type TaskType = {
   id: string;
   user_id: string;
@@ -46,4 +48,6 @@ export type {
   CreateTaskType,
   UpdateTaskType,
   UseTasksReturnType,
+  FilterStatusType,
+  FilterPriorityType,
 };
