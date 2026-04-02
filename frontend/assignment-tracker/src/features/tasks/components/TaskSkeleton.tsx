@@ -1,4 +1,4 @@
-function TaskSkeletopn() {
+function TaskSkeleton() {
   return (
     <div className="flex flex-col gap-3">
       <div className="card animate-pulse">
@@ -46,4 +46,4 @@ function TaskSkeletopn() {
   );
 }
 
-export default TaskSkeletopn;
+export default TaskSkeleton;

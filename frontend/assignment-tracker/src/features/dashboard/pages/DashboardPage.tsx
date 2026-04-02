@@ -11,7 +11,7 @@ import type {
   SortType,
   TaskType,
 } from "../../tasks/types";
-import TaskSkeletopn from "../../tasks/components/TaskSkeletopn";
+import TaskSkeleton from "../../tasks/components/TaskSkeleton";
 
 function DashboardPage() {
   const { user } = useAuth();
@@ -123,7 +123,7 @@ function DashboardPage() {
 
   // If tasks are loading, display skeleton design
   if (isTasksLoading) {
-    return <TaskSkeletopn />;
+    return <TaskSkeleton />;
   }
 
   // If there is an error, display error message and possible next action (try again)
