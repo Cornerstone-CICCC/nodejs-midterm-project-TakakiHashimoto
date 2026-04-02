@@ -11,10 +11,19 @@ import type {
   SortType,
   TaskType,
 } from "../../tasks/types";
+import TaskSkeletopn from "../../tasks/components/TaskSkeletopn";
 
 function DashboardPage() {
   const { user } = useAuth();
-  const { editTasks, addTasks, deleteTasks, tasks } = useTasks();
+  const {
+    editTasks,
+    addTasks,
+    deleteTasks,
+    tasks,
+    error,
+    isTaskLoading,
+    fetchTasks,
+  } = useTasks();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
@@ -30,6 +39,7 @@ function DashboardPage() {
 
   const priorityMapping = { high: 3, medium: 2, low: 1 };
 
+  // This is tasks to actually display: filtered, sorted
   const displayTasks: TaskType[] | [] = useMemo(() => {
     let computedTasks: TaskType[] | [] = [];
     // Filter first
@@ -49,7 +59,7 @@ function DashboardPage() {
     if (selectedSortValue === "due-asc") {
       const tempSortTasks = [...computedTasks];
       return tempSortTasks.sort((a, b) => {
-        if (!a.description && !b.due_date) return 0;
+        if (!a.due_date && !b.due_date) return 0;
         if (!a.due_date) return 1;
         if (!b.due_date) return -1;
         return new Date(a.due_date).getTime() - new Date(b.due_date).getTime(); // getTime() returns milliseconds
@@ -58,7 +68,7 @@ function DashboardPage() {
     if (selectedSortValue === "due-desc") {
       const tempSortTasks = [...computedTasks];
       return tempSortTasks.sort((a, b) => {
-        if (!a.description && !b.due_date) return 0;
+        if (!a.due_date && !b.due_date) return 0;
         if (!a.due_date) return 1;
         if (!b.due_date) return -1;
         return new Date(b.due_date).getTime() - new Date(a.due_date).getTime();
@@ -106,9 +116,88 @@ function DashboardPage() {
     setIsDeleteModalOpen(true);
   }
 
+  // This is the task to pass to the modal component
   const selectedTask = useMemo(() => {
     return tasks.find((t) => t.id === selectedTaskId);
   }, [selectedTaskId, tasks]);
+
+  // If tasks are loading, display skeleton design
+  if (isTaskLoading) {
+    return <TaskSkeletopn />;
+  }
+
+  // If there is an error, display error message and possible next action (try again)
+  if (error) {
+    return (
+      <div className="flex flex-col gap-4 items-start justify-center mt-3">
+        <div
+          role="alert"
+          className="alert alert-error alert-soft w-full items-center"
+        >
+          <span>Error! Task failed successfully.</span>
+        </div>
+        <p className="text-3xl pl-3">{error}</p>
+        <button
+          className="btn w-1/5 text-2xl btn-error"
+          onClick={() => {
+            fetchTasks();
+          }}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  // If tasks fetched successfully, but empty, display "No tasks provided yet"
+  if (tasks.length === 0) {
+    return (
+      <div className="relative">
+        {isModalOpen && (
+          <AddEditModal
+            closeModal={closeModal}
+            mode={mode}
+            editingTask={mode === "edit" ? selectedTask : null}
+            editTasks={editTasks}
+            addTasks={addTasks}
+          />
+        )}
+        <div className="flex flex-col justify-center items-center gap-3 mt-5">
+          <h2 className="text-3xl">There are no tasks to display.</h2>
+          <p className="text-2xl text-gray-400">
+            Get started by creating task here!
+          </p>
+          <button
+            className="flex gap-1 items-center btn btn-primary rounded-sm"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <span>
+              <Plus />
+            </span>
+            Create Tasks
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (displayTasks.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center gap-3 mt-5">
+        <h2 className="text-3xl">No tasks match your current filters.</h2>
+        <p className="text-2xl text-gray-400">Reset your filter.</p>
+        <button
+          className="flex gap-1 items-center btn btn-primary rounded-sm"
+          onClick={() => resetFilter()}
+        >
+          <span>
+            <Plus />
+          </span>
+          Reset filters
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative px-2">
@@ -306,7 +395,6 @@ function DashboardPage() {
           </button>
         </div>
         <div className="flex flex-col gap-3">
-          {displayTasks.length === 0 && <p>No assignments to display</p>}
           {displayTasks.map((t) => (
             <TaskCard
               key={t.id}

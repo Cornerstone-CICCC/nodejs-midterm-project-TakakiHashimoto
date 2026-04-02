@@ -19,7 +19,7 @@ function AddEditModal({
   closeModal: () => void;
   mode: "add" | "edit";
   editTasks: (id: string, data: UpdateTaskType) => Promise<void>;
-  addTasks?: (input: CreateTaskType) => Promise<void>;
+  addTasks: (input: CreateTaskType) => Promise<void>;
 }) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -29,8 +29,9 @@ function AddEditModal({
   const [status, setStatus] = useState<StatusType>("todo");
   const [priorityDisplayName, setPriorityDisplayName] =
     useState<string>("Priority");
-  const [statusDisplayName, setStatusDisplayName] =
-    useState<string>("Priority");
+  const [statusDisplayName, setStatusDisplayName] = useState<string>("Status");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   function handleCancel() {
     setTitle("");
@@ -44,25 +45,31 @@ function AddEditModal({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = {
-      title,
-      description,
-      subject,
-      due_date: dueDate,
-      priority,
-      status,
-    };
-    if (mode === "edit" && editingTask?.id) {
-      await editTasks(editingTask.id, data);
-      console.log("Succeessfully updated");
-    } else {
-      if (addTasks) {
+    setSubmitError(null);
+    try {
+      setIsSubmitting(true);
+      const data = {
+        title,
+        description,
+        subject,
+        due_date: dueDate,
+        priority,
+        status,
+      };
+      if (mode === "edit" && editingTask?.id) {
+        await editTasks(editingTask.id, data);
+        console.log("Succeessfully updated");
+      } else {
         await addTasks(data);
       }
+      closeModal();
+    } catch (e) {
+      setSubmitError(
+        e instanceof Error ? e.message : "Failed to add/edit task",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    console.log("Successfully executed");
-    closeModal();
   }
 
   useEffect(() => {
@@ -82,15 +89,18 @@ function AddEditModal({
     <div
       className="fixed z-10 flex justify-center items-center w-full h-screen bg-black/70"
       onClick={(e) => {
-        if (e.target === e.currentTarget) closeModal();
+        if (e.target === e.currentTarget && !isSubmitting) closeModal();
       }}
     >
       <div className="bg-white card" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between">
-          <h2 className="text-blue-800 text-2xl">Add assignments</h2>
+          <h2 className="text-white text-4xl">
+            {mode === "edit" ? "Update Assignment" : "Add Assignment"}
+          </h2>
           <button
             className="btn btn-sm btn-circle btn-ghost"
             onClick={() => closeModal()}
+            disabled={isSubmitting}
           >
             ✕
           </button>
@@ -107,6 +117,8 @@ function AddEditModal({
               className="input input-success rounded-sm w-full text-secondary"
               value={title}
               id="assignment-title"
+              required
+              disabled={isSubmitting}
             />
           </div>
           <div className="flex gap-3">
@@ -120,6 +132,7 @@ function AddEditModal({
                   setSubject(e.target.value)
                 }
                 type="text"
+                disabled={isSubmitting}
                 className="input input-success rounded-sm text-secondary"
               />
             </div>
@@ -131,6 +144,7 @@ function AddEditModal({
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
                 type="date"
+                disabled={isSubmitting}
                 className="input input-success rounded-sm text-secondary"
               />
             </div>
@@ -141,6 +155,7 @@ function AddEditModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
+            disabled={isSubmitting}
             className=" text-secondary rounded-sm p-2 base-200 bg-black/30"
           />
           <div className="flex gap-3">
@@ -154,8 +169,10 @@ function AddEditModal({
               >
                 <li
                   onClick={() => {
-                    setPriority("low");
-                    setPriorityDisplayName("low");
+                    if (!isSubmitting) {
+                      setPriority("low");
+                      setPriorityDisplayName("low");
+                    }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
@@ -163,8 +180,10 @@ function AddEditModal({
                 </li>
                 <li
                   onClick={() => {
-                    setPriority("medium");
-                    setPriorityDisplayName("medium");
+                    if (!isSubmitting) {
+                      setPriority("medium");
+                      setPriorityDisplayName("medium");
+                    }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
@@ -172,8 +191,10 @@ function AddEditModal({
                 </li>
                 <li
                   onClick={() => {
-                    setPriority("high");
-                    setPriorityDisplayName("high");
+                    if (!isSubmitting) {
+                      setPriority("high");
+                      setPriorityDisplayName("high");
+                    }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
@@ -192,8 +213,10 @@ function AddEditModal({
               >
                 <li
                   onClick={() => {
-                    setStatus("todo");
-                    setStatusDisplayName("todo");
+                    if (!isSubmitting) {
+                      setStatus("todo");
+                      setStatusDisplayName("todo");
+                    }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
@@ -201,8 +224,10 @@ function AddEditModal({
                 </li>
                 <li
                   onClick={() => {
-                    setStatus("in-progress");
-                    setStatusDisplayName("in-progress");
+                    if (!isSubmitting) {
+                      setStatus("in-progress");
+                      setStatusDisplayName("in-progress");
+                    }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
@@ -210,8 +235,10 @@ function AddEditModal({
                 </li>
                 <li
                   onClick={() => {
-                    setStatus("done");
-                    setStatusDisplayName("done");
+                    if (!isSubmitting) {
+                      setStatus("done");
+                      setStatusDisplayName("done");
+                    }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
                 >
@@ -225,13 +252,41 @@ function AddEditModal({
               type="button"
               onClick={handleCancel}
               className="btn btn-outline"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
-            <button className="btn btn-info cursor-pointer">
-              Add assignment
+            <button
+              className="btn btn-info cursor-pointer"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? mode === "edit"
+                  ? "Updating..."
+                  : "Adding..."
+                : mode === "edit"
+                  ? "Update assignment"
+                  : "Add assignment"}
             </button>
           </div>
+          {submitError && (
+            <div role="alert" className="alert alert-error">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{submitError}</span>
+            </div>
+          )}
         </form>
       </div>
     </div>

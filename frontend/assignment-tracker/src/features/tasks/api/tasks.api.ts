@@ -2,14 +2,26 @@ import type { CreateTaskType, UpdateTaskType } from "../types";
 
 const baseUrl = "http://localhost:5000/api/tasks";
 
+async function getErrorMessage(res: Response, fallback: string) {
+  try {
+    const data = await res.json();
+    return data.error ? data.error : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
 // res.ok => return status which is sent from backend, 2XX = .ok
-async function getALlTasks() {
+async function getAllTasks() {
   const res = await fetch(`${baseUrl}`, {
     method: "GET",
     credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch tasks");
+  if (!res.ok) {
+    const message = await getErrorMessage(res, "Failed to fetch tasks");
+    throw new Error(message);
+  }
 
   return await res.json();
 }
@@ -19,7 +31,13 @@ async function getTaskById(id: string) {
     method: "GET",
     credentials: "include",
   });
-  if (!res.ok) throw new Error("Failed to fetch a task with this id");
+  if (!res.ok) {
+    const message = await getErrorMessage(
+      res,
+      "Failed to fetch a task with this id",
+    );
+    throw new Error(message);
+  }
 
   return await res.json();
 }
@@ -33,11 +51,10 @@ async function createTask(data: CreateTaskType) {
   });
 
   if (!res.ok) {
-    console.log("Failed to updating");
-    throw new Error("Failed to fetch tasks");
+    const message = await getErrorMessage(res, "Failed to create task");
+    throw new Error(message);
   }
 
-  console.log("Succeded in updating");
   return await res.json();
 }
 
@@ -49,7 +66,10 @@ async function updateTask(id: string, data: UpdateTaskType) {
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) throw new Error("Failed to update a task");
+  if (!res.ok) {
+    const message = await getErrorMessage(res, "Failed to update a task ");
+    throw new Error(message);
+  }
 
   return await res.json();
 }
@@ -59,9 +79,12 @@ async function deleteTask(id: string) {
     method: "DELETE",
     credentials: "include",
   });
-  if (!res.ok) throw new Error("Failed to delete a task");
+  if (!res.ok) {
+    const message = await getErrorMessage(res, "Failed to delete a task");
+    throw new Error(message);
+  }
 
   return await res.json();
 }
 
-export { getALlTasks, getTaskById, createTask, updateTask, deleteTask };
+export { getAllTasks, getTaskById, createTask, updateTask, deleteTask };

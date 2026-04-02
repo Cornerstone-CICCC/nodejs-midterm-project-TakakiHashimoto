@@ -14,7 +14,7 @@ import AddEditModal from "../components/AddEditModal";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
 function TaskDetailPage() {
-  const { tasks, editTasks, deleteTasks } = useTasks();
+  const { tasks, editTasks, deleteTasks, addTasks } = useTasks();
   const { taskId } = useParams();
   const task = tasks.find((t) => t.id === taskId);
 
@@ -123,6 +123,7 @@ function TaskDetailPage() {
           editTasks={editTasks}
           editingTask={task}
           closeModal={closeModal}
+          addTasks={addTasks}
         />
       )}
       {isDeleteModalOpen && (
