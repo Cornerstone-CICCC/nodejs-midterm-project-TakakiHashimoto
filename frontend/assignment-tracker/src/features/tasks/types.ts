@@ -39,23 +39,24 @@ type UpdateTaskType = {
   subject?: string;
 };
 
-type UseTasksReturnType = {
+type TaskContextType = {
   tasks: TaskType[];
-  isLoading: boolean;
+  isTasksLoading: boolean;
   error: string | null;
   fetchTasks: () => Promise<void>;
-  addTasks: (input: CreateTaskType) => Promise<void>;
-  editTasks: (id: string, data: UpdateTaskType) => Promise<void>;
-  deleteTasks: (id: string) => Promise<void>;
+  editTask: (id: string, input: UpdateTaskType) => Promise<void>;
+  removeTask: (id: string) => Promise<void>;
+  addTask: (input: CreateTaskType) => Promise<void>;
 };
+
 export type {
   PriorityType,
   StatusType,
   TaskType,
   CreateTaskType,
   UpdateTaskType,
-  UseTasksReturnType,
   FilterStatusType,
   FilterPriorityType,
   SortType,
+  TaskContextType,
 };

@@ -27,9 +27,7 @@ function AddEditModal({
   const [dueDate, setDueDate] = useState<string>("");
   const [priority, setPriority] = useState<PriorityType>("medium");
   const [status, setStatus] = useState<StatusType>("todo");
-  const [priorityDisplayName, setPriorityDisplayName] =
-    useState<string>("Priority");
-  const [statusDisplayName, setStatusDisplayName] = useState<string>("Status");
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -80,9 +78,7 @@ function AddEditModal({
     setSubject(editingTask.subject ?? "");
     setDueDate(formatDueDate ?? "");
     setPriority(editingTask.priority);
-    setPriorityDisplayName(editingTask.priority);
     setStatus(editingTask.status);
-    setStatusDisplayName(editingTask.status);
   }, [editingTask]);
 
   return (
@@ -161,7 +157,7 @@ function AddEditModal({
           <div className="flex gap-3">
             <div className="dropdown">
               <div tabIndex={0} role="button" className="btn m-1 flex gap-1">
-                <span>{priorityDisplayName}</span> <ChevronDown />
+                <span>{priority}</span> <ChevronDown />
               </div>
               <ul
                 tabIndex={-1}
@@ -171,7 +167,6 @@ function AddEditModal({
                   onClick={() => {
                     if (!isSubmitting) {
                       setPriority("low");
-                      setPriorityDisplayName("low");
                     }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
@@ -182,7 +177,6 @@ function AddEditModal({
                   onClick={() => {
                     if (!isSubmitting) {
                       setPriority("medium");
-                      setPriorityDisplayName("medium");
                     }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
@@ -193,7 +187,6 @@ function AddEditModal({
                   onClick={() => {
                     if (!isSubmitting) {
                       setPriority("high");
-                      setPriorityDisplayName("high");
                     }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
@@ -204,7 +197,7 @@ function AddEditModal({
             </div>
             <div className="dropdown">
               <div tabIndex={0} role="button" className="btn m-1 flex gap-1">
-                <span>{statusDisplayName}</span>
+                <span>{status}</span>
                 <ChevronDown />
               </div>
               <ul
@@ -215,7 +208,6 @@ function AddEditModal({
                   onClick={() => {
                     if (!isSubmitting) {
                       setStatus("todo");
-                      setStatusDisplayName("todo");
                     }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
@@ -226,7 +218,6 @@ function AddEditModal({
                   onClick={() => {
                     if (!isSubmitting) {
                       setStatus("in-progress");
-                      setStatusDisplayName("in-progress");
                     }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"
@@ -237,7 +228,6 @@ function AddEditModal({
                   onClick={() => {
                     if (!isSubmitting) {
                       setStatus("done");
-                      setStatusDisplayName("done");
                     }
                   }}
                   className="cursor-pointer text-white hover:text-black hover:bg-white hover:font-bold hover:rounded-sm px-2"

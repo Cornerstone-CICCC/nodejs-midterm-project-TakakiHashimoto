@@ -25,14 +25,18 @@ function Navbar() {
                   console.error(err);
                 }
               }}
-              className="cursor-pointer"
+              className="cursor-pointer btn btn-outline btn-primary"
             >
               Logout
             </button>
           ) : (
-            <div>
-              <Link to="/login">Login</Link>
-              <Link to="/signup">Signup</Link>
+            <div className="flex gap-1 items-center">
+              <Link to="/login" className="btn btn-outline btn-primary">
+                Login
+              </Link>
+              <Link to="/signup" className="btn btn-outline btn-primary">
+                Signup
+              </Link>
             </div>
           )}
         </div>

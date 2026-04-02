@@ -1,23 +1,34 @@
-import { useCallback, useEffect, useState } from "react";
-import type { CreateTaskType, TaskType, UpdateTaskType } from "../types";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  createContext,
+  useMemo,
+  type ReactNode,
+} from "react";
+import type {
+  CreateTaskType,
+  TaskContextType,
+  TaskType,
+  UpdateTaskType,
+} from "../../features/tasks/types";
 import {
   createTask,
   deleteTask,
   getAllTasks,
   updateTask,
-} from "../api/tasks.api";
+} from "../../features/tasks/api/tasks.api";
 
-// stateの一括管理みたいな
-// Dashboardとかでやる、tasksをonload で読み込んだり、アップデートでtasksのstateを変えたりする系の一括管理
-// ここで変わったstateは、コールしたコンポーネントのstateもかえる
-function useTasks() {
+const TaskContext = createContext<TaskContextType | undefined>(undefined);
+
+function TaskProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<TaskType[]>([]);
-  const [isTaskLoading, setIsTaskLoading] = useState<boolean>(true);
+  const [isTasksLoading, setIsTasksLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTasks = useCallback(async () => {
     try {
-      setIsTaskLoading(true);
+      setIsTasksLoading(true);
       setError(null);
       const data = await getAllTasks();
       setTasks(data.tasks);
@@ -26,11 +37,11 @@ function useTasks() {
       setError(e instanceof Error ? e.message : "Failed to fetch tasks");
       setTasks([]);
     } finally {
-      setIsTaskLoading(false);
+      setIsTasksLoading(false);
     }
   }, []);
 
-  const addTasks = useCallback(async (input: CreateTaskType) => {
+  const addTask = useCallback(async (input: CreateTaskType) => {
     try {
       setError(null);
       const data = await createTask(input); // { message: "Successfully created new task", task: data.rows[0] }
@@ -42,7 +53,7 @@ function useTasks() {
     }
   }, []);
 
-  const editTasks = useCallback(async (id: string, input: UpdateTaskType) => {
+  const editTask = useCallback(async (id: string, input: UpdateTaskType) => {
     try {
       setError(null);
       const data = await updateTask(id, input);
@@ -56,7 +67,7 @@ function useTasks() {
     }
   }, []);
 
-  const deleteTasks = useCallback(async (id: string) => {
+  const removeTask = useCallback(async (id: string) => {
     try {
       setError(null);
       await deleteTask(id);
@@ -71,15 +82,18 @@ function useTasks() {
     fetchTasks();
   }, [fetchTasks]);
 
-  return {
-    tasks,
-    isTaskLoading,
-    error,
-    fetchTasks,
-    editTasks,
-    deleteTasks,
-    addTasks,
-  };
+  const value = useMemo<TaskContextType>(() => {
+    return {
+      tasks,
+      isTasksLoading,
+      error,
+      fetchTasks,
+      editTask,
+      removeTask,
+      addTask,
+    };
+  }, [tasks, isTasksLoading, error, fetchTasks, editTask, deleteTask, addTask]);
+  return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
 }
 
-export { useTasks };
+export { TaskContext, TaskProvider };

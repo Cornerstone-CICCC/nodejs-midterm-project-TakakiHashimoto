@@ -16,12 +16,12 @@ import TaskSkeletopn from "../../tasks/components/TaskSkeletopn";
 function DashboardPage() {
   const { user } = useAuth();
   const {
-    editTasks,
-    addTasks,
-    deleteTasks,
+    editTask,
+    addTask,
+    removeTask,
     tasks,
     error,
-    isTaskLoading,
+    isTasksLoading,
     fetchTasks,
   } = useTasks();
 
@@ -122,7 +122,7 @@ function DashboardPage() {
   }, [selectedTaskId, tasks]);
 
   // If tasks are loading, display skeleton design
-  if (isTaskLoading) {
+  if (isTasksLoading) {
     return <TaskSkeletopn />;
   }
 
@@ -158,8 +158,8 @@ function DashboardPage() {
             closeModal={closeModal}
             mode={mode}
             editingTask={mode === "edit" ? selectedTask : null}
-            editTasks={editTasks}
-            addTasks={addTasks}
+            editTasks={editTask}
+            addTasks={addTask}
           />
         )}
         <div className="flex flex-col justify-center items-center gap-3 mt-5">
@@ -206,8 +206,8 @@ function DashboardPage() {
           closeModal={closeModal}
           mode={mode}
           editingTask={mode === "edit" ? selectedTask : null}
-          editTasks={editTasks}
-          addTasks={addTasks}
+          editTasks={editTask}
+          addTasks={addTask}
         />
       )}
       {/* will fix to type gurad when the task is undefined */}
@@ -215,7 +215,7 @@ function DashboardPage() {
         <DeleteConfirmModal
           task={selectedTask!}
           closeModal={closeModal}
-          deleteTasks={deleteTasks}
+          deleteTasks={removeTask}
         />
       )}
       <div className="flex flex-col gap-3 ">

@@ -12,124 +12,98 @@ import { useState } from "react";
 import { Link } from "react-router";
 import AddEditModal from "../components/AddEditModal";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
+import TaskDetailSkeleton from "../components/TaskDetailSkeleton";
 
 function TaskDetailPage() {
-  const { tasks, editTasks, deleteTasks, addTasks } = useTasks();
+  const {
+    tasks,
+    editTask,
+    removeTask,
+    addTask,
+    isTasksLoading,
+    error,
+    fetchTasks,
+  } = useTasks();
   const { taskId } = useParams();
   const task = tasks.find((t) => t.id === taskId);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
-  if (!task) return <h1>No Task Found</h1>;
-  if (!task.due_date) {
+  const computeDueDate = () => {
+    if (!task?.due_date) return "Due Date: No Due Date is provided";
+    const dueDate = new Date(task.due_date);
+    if (Number.isNaN(dueDate.getTime()))
+      return "Due Date: Invalid Due Date format";
+
+    const year = dueDate.getFullYear();
+    const month = dueDate.toLocaleDateString("en-US", { month: "short" });
+    const date = dueDate.getDate();
+    const day = dueDate.toLocaleDateString("en-US", { weekday: "long" });
+    return `Due Date: ${year}-${month}-${date}, ${day}`;
+  };
+
+  const computedDueDate = computeDueDate();
+
+  if (isTasksLoading) {
+    return <TaskDetailSkeleton />;
+  }
+
+  if (error) {
     return (
-      <div>
-        <div>
-          <h1 className="text-5xl">Task Detail</h1>
+      <div className="flex flex-col gap-4 items-start justify-center mt-3">
+        <div
+          role="alert"
+          className="alert alert-error alert-soft w-full items-center"
+        >
+          <span>Error! Task failed successfully.</span>
         </div>
-        <div>
-          <div>
-            <h2 className="card-task-title">{task.title}</h2>
-            <p>
-              Subject: <span>{task.subject}</span>
-            </p>
-            <p>
-              Description:<span>{task.description}</span>
-            </p>
-            <div className="flex gap-1 items-center">
-              <CalendarDays /> No Due Date is provided
-            </div>
-            <div>
-              <Flag />
-              Priority: {task.priority}
-            </div>
-            <div>
-              <Check />
-              Status: {task.status}
-            </div>
-          </div>
-          <div>
-            <div className="flex gap-1">
-              <Pencil />
-              <button>Edit your task</button>
-            </div>
-            <div className="flex gap-1">
-              <Trash2 />
-              <button>Delete</button>
-            </div>
-          </div>
-        </div>
+        <p className="text-3xl pl-3">{error}</p>
+        <button
+          className="btn w-1/5 text-2xl btn-error"
+          onClick={() => {
+            fetchTasks();
+          }}
+        >
+          Try again
+        </button>
       </div>
     );
   }
-  const dueDate = new Date(task.due_date);
-  if (Number.isNaN(dueDate.getTime())) {
+
+  if (!task)
     return (
       <div>
-        <div>
-          <h1 className="text-5xl">Task Detail</h1>
-        </div>
-        <div>
-          <div>
-            <h2 className="card-task-title">{task.title}</h2>
-            <p>
-              Subject: <span>{task.subject}</span>
-            </p>
-            <p>
-              Description:<span>{task.description}</span>
-            </p>
-            <div className="flex gap-1 items-center">
-              <CalendarDays /> Due Date: Invalid Due Date format
-            </div>
-            <div>
-              <Flag />
-              Priority: {task.priority}
-            </div>
-            <div>
-              <Check />
-              Status: {task.status}
-            </div>
-          </div>
-          <div>
-            <div className="flex gap-1">
-              <Pencil />
-              <button>Edit your task</button>
-            </div>
-            <div className="flex gap-1">
-              <Trash2 />
-              <button>Delete</button>
-            </div>
-          </div>
-        </div>
+        <p>Task not found</p>
+        <Link
+          to={"/dashboard"}
+          className="pl-3 hover:underline-offset-4 hover:underline flex gap-1 items-center hover:scale-105 duration-300"
+        >
+          Go to dashboard
+          <MoveRight className="hover:translate-x-1 duration-300" />
+        </Link>
       </div>
     );
-  }
 
   function closeModal() {
     setIsEditModalOpen(false);
   }
-
-  const year = dueDate.getFullYear();
-  const month = dueDate.toLocaleDateString("en-US", { month: "short" });
-  const date = dueDate.getDate();
-  const day = dueDate.toLocaleDateString("en-US", { weekday: "long" });
 
   return (
     <div className="relative flex flex-col justify-start items-center pt-6">
       {isEditModalOpen && (
         <AddEditModal
           mode="edit"
-          editTasks={editTasks}
+          editTasks={editTask}
           editingTask={task}
           closeModal={closeModal}
-          addTasks={addTasks}
+          addTasks={addTask}
         />
       )}
       {isDeleteModalOpen && (
         <DeleteConfirmModal
           task={task}
-          deleteTasks={deleteTasks}
+          deleteTasks={removeTask}
           closeModal={() => setIsDeleteModalOpen(false)}
         />
       )}
@@ -146,7 +120,7 @@ function TaskDetailPage() {
             Description:<span>{task.description}</span>
           </p>
           <div className="flex gap-1 items-center">
-            <CalendarDays /> Due Date: {year}-{month}-{date}, {day}
+            <CalendarDays /> {computedDueDate}
           </div>
           <div className="flex gap-1 items-center">
             <Flag />
@@ -158,20 +132,22 @@ function TaskDetailPage() {
           </div>
         </div>
         <div className="flex flex-col gap-5 border border-emerald-500 p-5 rounded-sm card">
-          <div
-            className="flex gap-1 items-center btn btn-warning rounded-xs"
+          <button
+            className="flex gap-1 items-center justify-between btn btn-warning rounded-xs"
             onClick={() => setIsEditModalOpen(true)}
           >
             <Pencil />
-            <button>Edit your task</button>
-          </div>
-          <div
-            className="flex gap-1 items-center btn btn-error rounded-xs"
+            Edit your task
+          </button>
+
+          <button
+            className="flex gap-1 items-center justify-between btn btn-error rounded-xs"
             onClick={() => setIsDeleteModalOpen(true)}
           >
             <Trash2 />
-            <button>Delete</button>
-          </div>
+            <span className="w-3/4">Delete</span>
+          </button>
+
           <Link
             to={"/dashboard"}
             className="pl-3 hover:underline-offset-4 hover:underline flex gap-1 items-center hover:scale-105 duration-300"
