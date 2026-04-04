@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import type { TaskType } from "../types";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function DeleteConfirmModal({
   closeModal,
@@ -13,12 +14,15 @@ function DeleteConfirmModal({
 }) {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
   async function handleDelete() {
     try {
       setIsDeleting(true);
       setDeleteError(null);
       await deleteTasks(task.id);
       closeModal();
+      navigate("/dashboard");
     } catch (e) {
       setDeleteError(e instanceof Error ? e.message : "Failed to delete task");
     } finally {
@@ -79,12 +83,18 @@ function DeleteConfirmModal({
             <Trash2 />
             <span>{isDeleting ? "Deleting..." : "Delete"}</span>
           </button>
-          {deleteError && (
-            <div role="alert" className="alert alert-error alert-soft">
-              <span>{deleteError}</span>
-            </div>
-          )}
         </div>
+        {deleteError && (
+          <div className="flex flex-col gap-4 items-start justify-center mt-3">
+            <div
+              role="alert"
+              className="alert alert-error alert-soft w-full items-center"
+            >
+              <p>Failed to delete a task. Please try again.</p>
+              <span className="text-white">{deleteError}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -14,12 +14,14 @@ function AddEditModal({
   mode,
   editTasks,
   addTasks,
+  isModalOpen,
 }: {
   editingTask?: TaskType | null;
   closeModal: () => void;
   mode: "add" | "edit";
   editTasks: (id: string, data: UpdateTaskType) => Promise<void>;
   addTasks: (input: CreateTaskType) => Promise<void>;
+  isModalOpen: boolean;
 }) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -80,6 +82,24 @@ function AddEditModal({
     setPriority(editingTask.priority);
     setStatus(editingTask.status);
   }, [editingTask]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    }
+
+    if (!isSubmitting) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isModalOpen, closeModal]);
 
   return (
     <div
@@ -260,21 +280,18 @@ function AddEditModal({
             </button>
           </div>
           {submitError && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
+            <div className="flex flex-col gap-4 items-start justify-center mt-3">
+              <div
+                role="alert"
+                className="alert alert-error alert-soft w-full items-center"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{submitError}</span>
+                <p>
+                  Failed to {mode === "edit" ? "update" : "add"} assignment.
+                  Please try again.
+                </p>
+                <span className="text-white">{submitError}</span>
+              </div>
+              <p className="text-3xl pl-3">{submitError}</p>
             </div>
           )}
         </form>

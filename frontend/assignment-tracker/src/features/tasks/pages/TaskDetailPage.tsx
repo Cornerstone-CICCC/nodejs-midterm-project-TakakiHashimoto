@@ -56,7 +56,8 @@ function TaskDetailPage() {
           role="alert"
           className="alert alert-error alert-soft w-full items-center"
         >
-          <span>Error! Task failed successfully.</span>
+          <p>Failed to load task detail. Please try again.</p>
+          <span>{error}</span>
         </div>
         <p className="text-3xl pl-3">{error}</p>
         <button
@@ -74,7 +75,11 @@ function TaskDetailPage() {
   if (!task)
     return (
       <div>
-        <p>Task not found</p>
+        <div>
+          <h3 className="text-2xl">Task not found</h3>
+          <p>The task may have been deleted or the link may be invalid.</p>
+        </div>
+
         <Link
           to={"/dashboard"}
           className="pl-3 hover:underline-offset-4 hover:underline flex gap-1 items-center hover:scale-105 duration-300"
@@ -98,6 +103,7 @@ function TaskDetailPage() {
           editingTask={task}
           closeModal={closeModal}
           addTasks={addTask}
+          isModalOpen={isEditModalOpen}
         />
       )}
       {isDeleteModalOpen && (

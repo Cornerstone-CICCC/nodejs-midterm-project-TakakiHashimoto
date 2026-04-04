@@ -134,7 +134,8 @@ function DashboardPage() {
           role="alert"
           className="alert alert-error alert-soft w-full items-center"
         >
-          <span>Error! Task failed successfully.</span>
+          <p>Failed to load tasks. Please try again.</p>
+          <span className="text-white">{error}</span>
         </div>
         <p className="text-3xl pl-3">{error}</p>
         <button
@@ -160,6 +161,7 @@ function DashboardPage() {
             editingTask={mode === "edit" ? selectedTask : null}
             editTasks={editTask}
             addTasks={addTask}
+            isModalOpen={isModalOpen}
           />
         )}
         <div className="flex flex-col justify-center items-center gap-3 mt-5">
@@ -208,6 +210,7 @@ function DashboardPage() {
           editingTask={mode === "edit" ? selectedTask : null}
           editTasks={editTask}
           addTasks={addTask}
+          isModalOpen={isModalOpen}
         />
       )}
       {/* will fix to type gurad when the task is undefined */}
