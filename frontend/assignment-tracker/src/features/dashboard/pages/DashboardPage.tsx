@@ -12,6 +12,7 @@ import type {
   TaskType,
 } from "../../tasks/types";
 import TaskSkeleton from "../../tasks/components/TaskSkeleton";
+import TaskColumn from "../../tasks/components/TaskColumn";
 
 function DashboardPage() {
   const { user } = useAuth();
@@ -31,6 +32,7 @@ function DashboardPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
   const [isSortModalOpen, setIsSortModalOpen] = useState<boolean>(false);
+  const [searchKeywords, setSearchKeyWords] = useState<string>("");
 
   const [selectedStatus, setSelectedStatus] = useState<FilterStatusType>("all");
   const [selectedPriority, setSelectedPriority] =
@@ -40,7 +42,7 @@ function DashboardPage() {
   const priorityMapping = { high: 3, medium: 2, low: 1 };
 
   // This is tasks to actually display: filtered, sorted
-  const displayTasks: TaskType[] | [] = useMemo(() => {
+  const displayTasks: TaskType[] = useMemo(() => {
     let computedTasks: TaskType[] | [] = [];
     // Filter first
     if (selectedStatus === "all" && selectedPriority === "all")
@@ -53,6 +55,17 @@ function DashboardPage() {
       computedTasks = tasks.filter(
         (t) => t.status === selectedStatus && t.priority === selectedPriority,
       );
+
+    // Searching with keywords
+    if (searchKeywords.trim()) {
+      const normalizedKeyword = searchKeywords.trim().toLowerCase();
+      computedTasks = computedTasks.filter(
+        (t) =>
+          t.title.toLowerCase().includes(normalizedKeyword) ||
+          t.description?.toLowerCase().includes(normalizedKeyword) ||
+          t.subject?.toLowerCase().includes(normalizedKeyword),
+      );
+    }
 
     // sorting with filterd tasks
     if (selectedSortValue === "none") return computedTasks;
@@ -87,11 +100,32 @@ function DashboardPage() {
       );
     }
     return computedTasks;
-  }, [selectedPriority, selectedStatus, tasks, selectedSortValue]);
+  }, [
+    selectedPriority,
+    selectedStatus,
+    tasks,
+    selectedSortValue,
+    searchKeywords,
+  ]);
+
+  const tasksByStatus = useMemo(() => {
+    return {
+      todo: displayTasks.filter((t) => t.status === "todo"),
+      "in-progress": displayTasks.filter((t) => t.status === "in-progress"),
+      done: displayTasks.filter((t) => t.status === "done"),
+    };
+  }, [displayTasks]);
+
+  const STATUS_COLUMN: { id: string; title: string }[] = [
+    { id: "todo", title: "To Do" },
+    { id: "in-progress", title: "In Progress" },
+    { id: "done", title: "Done" },
+  ];
 
   function resetFilter() {
     setSelectedPriority("all");
     setSelectedStatus("all");
+    setSearchKeyWords("");
   }
 
   function resetSortValue() {
@@ -183,24 +217,7 @@ function DashboardPage() {
     );
   }
 
-  if (displayTasks.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center gap-3 mt-5">
-        <h2 className="text-3xl">No tasks match your current filters.</h2>
-        <p className="text-2xl text-gray-400">Reset your filter.</p>
-        <button
-          className="flex gap-1 items-center btn btn-primary rounded-sm"
-          onClick={() => resetFilter()}
-        >
-          <span>
-            <Plus />
-          </span>
-          Reset filters
-        </button>
-      </div>
-    );
-  }
-
+  // Everything is successfull with none-empty data
   return (
     <div className="relative px-2">
       {isModalOpen && (
@@ -223,8 +240,10 @@ function DashboardPage() {
       )}
       <div className="flex flex-col gap-3 ">
         <h1 className="text-5xl mx-3">Welcome back, {user?.username}</h1>
+        {/* Sort/filter/search area */}
         <div className="flex justify-start px-2.5">
           <div className="relative">
+            {/* filter */}
             <div className="flex gap-1 items-center mx-1.5 mt-0.5 relative  ">
               <button
                 onClick={() => setIsFilterModalOpen(true)}
@@ -317,6 +336,7 @@ function DashboardPage() {
             </div>
           </div>
           <div className="relative">
+            {/* sort */}
             <div className="flex gap-1 items-center mx-1.5 mt-0.5 relative ">
               <button
                 className="flex gap-1 items-center btn rounded-xs"
@@ -384,8 +404,21 @@ function DashboardPage() {
               )}
             </div>
           </div>
+          {/* search */}
+          <div>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="input input-primary border border-emerald-400 focus:border-none"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchKeyWords(e.target.value)
+              }
+              value={searchKeywords}
+            />
+          </div>
         </div>
 
+        {/* Add task button */}
         <div>
           <button
             className="flex gap-1 items-center btn btn-primary rounded-sm"
@@ -397,16 +430,48 @@ function DashboardPage() {
             Add task
           </button>
         </div>
-        <div className="flex flex-col gap-3">
-          {displayTasks.map((t) => (
-            <TaskCard
-              key={t.id}
-              task={t}
-              changeModeToEdit={changeModeToEdit}
-              openDeleteModal={openDeleteModal}
-            />
-          ))}
-        </div>
+        {displayTasks.length === 0 ? (
+          <div className="flex flex-col justify-center items-center gap-3 mt-5">
+            <h2 className="text-3xl">
+              No tasks match your current filters or search keyword.
+            </h2>
+            <p className="text-2xl text-gray-400">
+              Reset your filter / Search keyword.
+            </p>
+            <button
+              className="flex gap-1 items-center btn btn-primary rounded-sm"
+              onClick={() => resetFilter()}
+            >
+              <span>
+                <Plus />
+              </span>
+              Reset filters
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div>
+              {STATUS_COLUMN.map((sc) => (
+                <TaskColumn
+                  key={sc.id}
+                  columnId={sc.id}
+                  title={sc.title}
+                  tasks={tasksByStatus[sc.id]}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col gap-3">
+              {displayTasks.map((t) => (
+                <TaskCard
+                  key={t.id}
+                  task={t}
+                  changeModeToEdit={changeModeToEdit}
+                  openDeleteModal={openDeleteModal}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
