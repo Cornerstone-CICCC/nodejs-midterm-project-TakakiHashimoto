@@ -79,7 +79,10 @@ function DraggableTaskCard({
         </button>
         <button
           className="btn btn-outline btn-error rounded-md"
-          onClick={() => openDeleteModal(task.id)}
+          onClick={(e) => {
+            e.preventDefault();
+            openDeleteModal(task.id);
+          }}
         >
           delete
         </button>
