@@ -2,7 +2,7 @@ import { ArrowDownAZ, ListFilterPlus, Plus } from "lucide-react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useMemo, useState } from "react";
 import { useTasks } from "../../tasks/hooks/useTasks";
-import TaskCard from "../../tasks/components/TaskCard";
+// import TaskCard from "../../tasks/components/TaskCard";
 import AddEditModal from "../../tasks/components/AddEditModal";
 import DeleteConfirmModal from "../../tasks/components/DeleteConfirmModal";
 import type {
@@ -13,6 +13,8 @@ import type {
 } from "../../tasks/types";
 import TaskSkeleton from "../../tasks/components/TaskSkeleton";
 import TaskColumn from "../../tasks/components/TaskColumn";
+
+type StatusColumnId = "todo" | "in-progress" | "done";
 
 function DashboardPage() {
   const { user } = useAuth();
@@ -116,7 +118,7 @@ function DashboardPage() {
     };
   }, [displayTasks]);
 
-  const STATUS_COLUMN: { id: string; title: string }[] = [
+  const STATUS_COLUMN: { id: StatusColumnId; title: string }[] = [
     { id: "todo", title: "To Do" },
     { id: "in-progress", title: "In Progress" },
     { id: "done", title: "Done" },
@@ -450,17 +452,20 @@ function DashboardPage() {
           </div>
         ) : (
           <div>
-            <div>
+            <div className="grid grid-cols-3 gap-3">
               {STATUS_COLUMN.map((sc) => (
                 <TaskColumn
                   key={sc.id}
                   columnId={sc.id}
                   title={sc.title}
                   tasks={tasksByStatus[sc.id]}
+                  editTask={editTask}
+                  changeModeToEdit={changeModeToEdit}
+                  openDeleteModal={openDeleteModal}
                 />
               ))}
             </div>
-            <div className="flex flex-col gap-3">
+            {/* <div className="flex flex-col gap-3">
               {displayTasks.map((t) => (
                 <TaskCard
                   key={t.id}
@@ -469,7 +474,7 @@ function DashboardPage() {
                   openDeleteModal={openDeleteModal}
                 />
               ))}
-            </div>
+            </div> */}
           </div>
         )}
       </div>
