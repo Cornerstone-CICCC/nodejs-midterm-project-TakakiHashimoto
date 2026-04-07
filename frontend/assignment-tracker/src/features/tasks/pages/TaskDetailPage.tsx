@@ -51,7 +51,7 @@ function TaskDetailPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col gap-4 items-start justify-center mt-3">
+      <div className="flex flex-col gap-4 items-start justify-center mt-3 card">
         <div
           role="alert"
           className="alert alert-error alert-soft w-full items-center"
@@ -95,7 +95,7 @@ function TaskDetailPage() {
   }
 
   return (
-    <div className="relative flex flex-col justify-start items-center pt-6">
+    <div className="relative flex flex-col justify-start items-center pt-6 ">
       {isEditModalOpen && (
         <AddEditModal
           mode="edit"
@@ -114,10 +114,10 @@ function TaskDetailPage() {
         />
       )}
       <div>
-        <h1 className="text-5xl">Task Detail</h1>
+        <h1 className="text-5xl mb-8">Task Detail</h1>
       </div>
-      <div className="flex gap-6 justify-between">
-        <div className="flex flex-col gap-2">
+      <div className="flex gap-6 items-center min-w-4xl task-detail-card p-8">
+        <div className="flex flex-col gap-2 w-full">
           <h2 className="card-task-title">{task.title}</h2>
           <p>
             Subject: <span>{task.subject}</span>
@@ -137,7 +137,8 @@ function TaskDetailPage() {
             Status: {task.status}
           </div>
         </div>
-        <div className="flex flex-col gap-5 border border-emerald-500 p-5 rounded-sm card">
+        {/* Action area */}
+        <div className="flex flex-col gap-5 border  p-5 rounded-sm card w-full">
           <button
             className="flex gap-1 items-center justify-between btn btn-warning rounded-xs"
             onClick={() => setIsEditModalOpen(true)}

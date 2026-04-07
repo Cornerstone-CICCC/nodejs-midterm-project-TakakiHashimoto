@@ -227,6 +227,17 @@
     @apply text-sm text-muted-foreground;
   }
 
+  .task-detail-card {
+    @apply rounded-2xl p-4;
+    @apply bg-gradient-to-br from-[#0b120d] via-[#0c110d] to-[#0d140f];
+    @apply text-[#d8e7d3];
+    @apply border border-[#2c4a34];
+    @apply shadow-[0_8px_30px_rgba(0,0,0,0.45)];
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(120, 180, 120, 0.08),
+      inset 0 0 0 1px rgba(70, 110, 70, 0.18);
+  }
   .task-badge {
     @apply inline-flex items-center justify-center rounded-full border whitespace-nowrap;
     @apply px-3.5 py-1.5 text-sm font-medium leading-none;
@@ -254,6 +265,30 @@
       radial-gradient(circle at top, rgba(34, 70, 45, 0.18), transparent 35%),
       rgba(2, 8, 4, 0.72);
     backdrop-filter: blur(6px);
+  }
+
+  .column-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 rgba(6, 78, 59, 0.3);
+    border-radius: 9999px;
+  }
+
+  .column-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .column-scrollbar::-webkit-scrollbar-track {
+    background: rgba(6, 78, 59, 0.3);
+    border-radius: 9999px;
+  }
+
+  .column-scrollbar::-webkit-scrollbar-thumb {
+    background: #10d648;
+    border-radius: 9999px;
+  }
+
+  .column-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #059669;
   }
 }
 

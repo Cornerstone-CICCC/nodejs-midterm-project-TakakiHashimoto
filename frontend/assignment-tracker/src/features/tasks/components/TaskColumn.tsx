@@ -36,7 +36,7 @@ function TaskColumn({
     <div
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
-      className="card overflow-y-scroll max-h-96"
+      className="card overflow-y-auto max-h-96 column-scrollbar"
     >
       <div className="flex flex-col gap-3">
         <h2 className="text-3xl">{title}</h2>
